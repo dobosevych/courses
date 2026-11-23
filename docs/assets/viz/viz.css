@@ -1,0 +1,378 @@
+/* Viz kit — shared look for standalone visualizations.
+   Catppuccin flavours, matching the site theme. The flavour is chosen by
+   <html data-theme="latte|frappe|macchiato|mocha">, which viz.js keeps in sync
+   with the page that embeds the visualization. */
+
+/* ---------- Palette ---------- */
+html {
+  --base: #eff1f5; --mantle: #e6e9ef; --crust: #dce0e8;
+  --surface0: #ccd0da; --surface1: #bcc0cc; --surface2: #acb0be;
+  --overlay0: #9ca0b0; --overlay1: #8c8fa1; --subtext0: #6c6f85; --subtext1: #5c5f77;
+  --text: #4c4f69;
+  --lavender: #7287fd; --blue: #1e66f5; --sapphire: #209fb5; --sky: #04a5e5;
+  --teal: #179299; --green: #40a02b; --yellow: #df8e1d; --peach: #fe640b;
+  --maroon: #e64553; --red: #d20f39; --mauve: #8839ef; --pink: #ea76cb;
+  --btn: #662d91; --btn-on: #ffffff;
+  color-scheme: light;
+}
+
+html[data-theme="frappe"] {
+  --base: #303446; --mantle: #292c3c; --crust: #232634;
+  --surface0: #414559; --surface1: #51576d; --surface2: #626880;
+  --overlay0: #737994; --overlay1: #838ba7; --subtext0: #a5adce; --subtext1: #b5bfe2;
+  --text: #c6d0f5;
+  --lavender: #babbf1; --blue: #8caaee; --sapphire: #85c1dc; --sky: #99d1db;
+  --teal: #81c8be; --green: #a6d189; --yellow: #e5c890; --peach: #ef9f76;
+  --maroon: #ea999c; --red: #e78284; --mauve: #ca9ee6; --pink: #f4b8e4;
+  --btn: #8bc751; --btn-on: #1a1a2e;
+  color-scheme: dark;
+}
+
+html[data-theme="macchiato"] {
+  --base: #24273a; --mantle: #1e2030; --crust: #181926;
+  --surface0: #363a4f; --surface1: #494d64; --surface2: #5b6078;
+  --overlay0: #6e738d; --overlay1: #8087a2; --subtext0: #a5adcb; --subtext1: #b8c0e0;
+  --text: #cad3f5;
+  --lavender: #b7bdf8; --blue: #8aadf4; --sapphire: #7dc4e4; --sky: #91d7e3;
+  --teal: #8bd5ca; --green: #a6da95; --yellow: #eed49f; --peach: #f5a97f;
+  --maroon: #ee99a0; --red: #ed8796; --mauve: #c6a0f6; --pink: #f5bde6;
+  --btn: #8bc751; --btn-on: #1a1a2e;
+  color-scheme: dark;
+}
+
+html[data-theme="mocha"] {
+  --base: #1e1e2e; --mantle: #181825; --crust: #11111b;
+  --surface0: #313244; --surface1: #45475a; --surface2: #585b70;
+  --overlay0: #6c7086; --overlay1: #7f849c; --subtext0: #a6adc8; --subtext1: #bac2de;
+  --text: #cdd6f4;
+  --lavender: #b4befe; --blue: #89b4fa; --sapphire: #74c7ec; --sky: #89dceb;
+  --teal: #94e2d5; --green: #a6e3a1; --yellow: #f9e2af; --peach: #fab387;
+  --maroon: #eba0ac; --red: #f38ba8; --mauve: #cba6f7; --pink: #f5c2e7;
+  --btn: #8bc751; --btn-on: #1a1a2e;
+  color-scheme: dark;
+}
+
+/* ---------- Semantic tokens ---------- */
+html {
+  --bg: var(--base);
+  --panel: var(--mantle);
+  --line: var(--surface0);
+  --muted: var(--subtext0);
+  --faint: var(--overlay0);
+  --primary: var(--mauve);
+  --accent: var(--green);
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Embedded in a site page: the frame sits on the code-block colour, panels on the page colour. */
+html.is-embedded {
+  --bg: var(--mantle);
+  --panel: var(--base);
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 1.5rem;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+html.is-embedded body { padding: 0.9rem; }
+
+.viz {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Title block: shown standalone, hidden when the site page already has the title. */
+.viz-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.viz-head h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.viz-head p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+html.is-embedded .viz-head { display: none; }
+
+h2, h3 {
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+h2 { font-size: 1.05rem; }
+h3 { font-size: 0.9rem; }
+
+p { margin: 0 0 0.6rem; }
+
+a { color: var(--accent); font-weight: 600; }
+
+code, .mono { font-family: var(--mono); font-size: 0.9em; }
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.7rem 1.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 8.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ctl.wide { min-width: 12rem; flex: 1 1 12rem; }
+
+/* Label row of a slider: name on the left, live value on the right. */
+.ctl > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.ctl output {
+  color: var(--text);
+  font-family: var(--mono);
+  font-weight: 500;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 0.2rem 0;
+  accent-color: var(--accent);
+}
+
+select,
+input[type="number"],
+input[type="text"] {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+select:focus-visible,
+input:focus-visible,
+button:focus-visible,
+.btn:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chk input { accent-color: var(--accent); }
+
+/* Outline buttons, as on the site. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.8rem;
+  border: 2px solid var(--btn);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--btn);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.btn:hover,
+.btn.is-active,
+.btn[aria-pressed="true"] {
+  background: var(--btn);
+  color: var(--btn-on);
+}
+
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn.small { padding: 0.15rem 0.55rem; border-width: 1px; font-size: 0.72rem; }
+
+/* Wrapper whose children take part in the parent's layout (e.g. the image picker). */
+.contents { display: contents; }
+
+/* Button group acting as a single choice. */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; }
+
+/* ---------- Layout ---------- */
+.panes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.panes.two { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.panes.four { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+.pane {
+  min-width: 0;
+  margin: 0;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.pane > figcaption,
+.pane-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.45rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pane > figcaption small,
+.pane-title small {
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.pane canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Low-resolution images shown enlarged keep crisp pixels. */
+canvas.px { image-rendering: pixelated; }
+
+/* Selected pane: a tint, not a coloured frame. */
+.pane.is-active { background: color-mix(in srgb, var(--accent) 14%, var(--panel)); }
+
+.stack > * + * { margin-top: 0.9rem; }
+
+/* ---------- Text bits ---------- */
+.readout {
+  margin: 0.5rem 0 0;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.readout b { color: var(--primary); font-weight: 600; }
+
+.note {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.35em;
+  border-radius: 2px;
+  vertical-align: baseline;
+}
+
+/* Small numeric grid: kernels, matrices. */
+.matrix {
+  display: inline-grid;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+}
+
+.matrix > * {
+  min-width: 2.6em;
+  padding: 0.25em 0.3em;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+}
+
+.matrix > .pos { color: var(--green); }
+.matrix > .neg { color: var(--red); }
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+table.data th,
+table.data td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+table.data th {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+table.data td.num { font-family: var(--mono); text-align: right; }

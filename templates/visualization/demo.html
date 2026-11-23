@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visualization title · Course name</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Three levels up from docs/<course>/visualizations/<name>/ is docs/. -->
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+</head>
+<body>
+  <main class="viz">
+    <!-- Shown when the demo is opened on its own; hidden when embedded in the site page. -->
+    <header class="viz-head">
+      <div>
+        <h1>Visualization title</h1>
+        <p>Lecture N.N · One line on what it shows</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <span class="contents" id="picker"></span>
+      <label class="ctl wide">
+        <span>Blur σ <output id="o-sigma"></output></span>
+        <input type="range" id="sigma" min="0" max="5" step="0.1" value="1.5">
+      </label>
+    </div>
+
+    <div class="panes two">
+      <figure class="pane">
+        <figcaption>Input</figcaption>
+        <canvas id="cIn" class="px"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Output</figcaption>
+        <canvas id="cOut" class="px"></canvas>
+      </figure>
+    </div>
+
+    <p class="readout" id="readout"></p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>

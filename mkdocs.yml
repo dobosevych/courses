@@ -1,0 +1,113 @@
+site_name: Courses
+site_description: Interactive course materials and visualizations
+site_url: https://dobosevych.github.io/courses/
+repo_url: https://github.com/dobosevych/courses
+repo_name: dobosevych/courses
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Catppuccin Latte (light)
+    - scheme: latte
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to Frappé
+
+    # Catppuccin Frappé (dark, coolest)
+    - scheme: frappe
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to Macchiato
+
+    # Catppuccin Macchiato (dark, warm)
+    - scheme: macchiato
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-partly-cloudy
+        name: Switch to Mocha
+
+    # Catppuccin Mocha (dark, warmest)
+    - scheme: mocha
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-cloudy
+        name: Switch to Latte
+  icon:
+    logo: material/school-outline
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.footer
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+
+# One tab per course. To add a visualization, add its page under the right lecture.
+nav:
+  - Home: index.md
+  - Computer Vision:
+      - Overview: computer-vision/index.md
+      - "1.2 Affine transformation. Histogram. Edge detection":
+          - Test-time augmentation: computer-vision/visualizations/test-time-augmentation/index.md
+          - Histogram: computer-vision/visualizations/histogram/index.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/buttons.css
+  - stylesheets/courses.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js

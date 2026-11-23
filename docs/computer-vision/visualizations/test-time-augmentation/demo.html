@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test-time augmentation · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    .section { margin-top: 1.3rem; }
+    .section > h2 { margin-bottom: 0.2rem; }
+    .section > .note { margin: 0 0 0.7rem; }
+
+    .group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 1rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .group > b {
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .group .ctl { min-width: 10rem; }
+    .groups { display: grid; gap: 0.6rem; }
+
+    .progress {
+      height: 4px;
+      margin: 0.6rem 0 0;
+      border-radius: 2px;
+      background: var(--line);
+      overflow: hidden;
+    }
+    .progress > i { display: block; height: 100%; width: 0; background: var(--accent); }
+
+    .views {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 0.8rem 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .tile { font-size: 0.68rem; line-height: 1.35; text-align: center; }
+    .tile canvas { display: block; width: 100%; height: auto; border-radius: 4px; image-rendering: pixelated; }
+    .tile .t { margin-top: 0.3rem; color: var(--muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tile .p { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+    .tile.ok .p, .tile.ok .sym { color: var(--green); }
+    .tile.bad .p, .tile.bad .sym { color: var(--red); }
+    .tile .sym {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--panel);
+      font-size: 2.4rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .bars { display: grid; grid-template-columns: 6.2rem 1fr 1fr; gap: 0.3rem 0.7rem; align-items: center; font-size: 0.74rem; }
+    .bars .h { color: var(--muted); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .bars .cls { font-weight: 600; white-space: nowrap; }
+    .bars .cls.true { color: var(--primary); }
+    .bar { position: relative; height: 1.15rem; border-radius: 3px; background: var(--bg); overflow: hidden; }
+    .bar > i { position: absolute; inset: 0 auto 0 0; background: var(--surface2); }
+    .bar > b { position: absolute; right: 0.35rem; top: 0; font: 500 0.68rem/1.15rem var(--mono); color: var(--text); }
+    /* The class each column decides on: green when it is the true class, red when it is not. */
+    .bar.win > i { background: var(--green); opacity: 0.7; }
+    .bar.win.wrong > i { background: var(--red); opacity: 0.6; }
+    .bar.win > b { font-weight: 700; }
+
+    .big { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.4rem 1.3rem; margin-bottom: 0.7rem; }
+    .big span { display: block; color: var(--muted); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .big b { font: 700 1.7rem/1.2 var(--mono); }
+    .big .gain b { color: var(--green); }
+    .big .gain.neg b { color: var(--red); }
+    .verdict { margin: 0; font-size: 0.84rem; }
+    .verdict b { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Test-time augmentation</h1>
+        <p>Lecture 1.2 · Predict on several transformed copies of the input and average</p>
+      </div>
+    </header>
+
+    <div class="groups">
+      <div class="group">
+        <b>Model</b>
+        <label class="ctl wide">
+          <span>Training images <output id="o-train"></output></span>
+          <input type="range" id="train" min="100" max="2000" step="100" value="400">
+        </label>
+        <label class="ctl wide">
+          <span>Image noise σ <output id="o-noise"></output></span>
+          <input type="range" id="noise" min="0.1" max="0.45" step="0.05" value="0.25">
+        </label>
+        <label class="chk"><input type="checkbox" id="augment"> Augment while training</label>
+        <button type="button" class="btn" id="retrain">New data</button>
+      </div>
+      <div class="group">
+        <b>Views at test time</b>
+        <label class="chk"><input type="checkbox" data-group="flip" checked> Flip</label>
+        <label class="chk"><input type="checkbox" data-group="shift" checked> Shift ±1 px</label>
+        <label class="chk"><input type="checkbox" data-group="rotate" checked> Rotate ±8°</label>
+        <label class="chk"><input type="checkbox" data-group="scale" checked> Scale ±10%</label>
+        <label class="ctl">
+          <span>Combine by</span>
+          <select id="mode">
+            <option value="mean">Mean probability</option>
+            <option value="geo">Mean log-probability</option>
+            <option value="vote">Majority vote</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="progress"><i id="progress"></i></div>
+    <p class="note" id="status">&nbsp;</p>
+
+    <section class="section">
+      <h2>One test image, many views</h2>
+      <p class="note">Every view is the same test image, transformed. The model predicts on each one separately; the last tile is the combined answer.</p>
+      <div class="controls">
+        <div class="seg">
+          <button type="button" class="btn" id="pick-fixed">An image TTA fixes</button>
+          <button type="button" class="btn" id="pick-broken">An image TTA breaks</button>
+          <button type="button" class="btn" id="pick-random">Random image</button>
+        </div>
+        <span class="note" id="pick-info" style="margin: 0"></span>
+      </div>
+      <div class="views" id="views"></div>
+      <div class="panes two">
+        <figure class="pane">
+          <figcaption>Class probabilities</figcaption>
+          <div class="bars" id="bars"></div>
+        </figure>
+        <figure class="pane">
+          <figcaption>What happened to this image</figcaption>
+          <p class="verdict" id="verdict"></p>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>The whole test set</h2>
+      <p class="note">The same procedure on 600 test images the model has never seen. All numbers are measured, not simulated.</p>
+      <div class="panes two">
+        <figure class="pane">
+          <figcaption>Accuracy vs. number of views averaged</figcaption>
+          <canvas id="chart"></canvas>
+          <div class="legend">
+            <span><i class="swatch" style="background: var(--accent)"></i>mean over random choices of views</span>
+            <span><i class="swatch" style="background: var(--accent); opacity: 0.25"></i>worst–best choice</span>
+            <span><i class="swatch" style="background: var(--faint)"></i>original image only</span>
+          </div>
+        </figure>
+        <figure class="pane">
+          <figcaption>Result</figcaption>
+          <div class="big">
+            <div><span>Single view</span><b id="acc1">–</b></div>
+            <div><span id="accN-label">TTA</span><b id="accN">–</b></div>
+            <div class="gain" id="gain-box"><span>Gain</span><b id="gain">–</b></div>
+          </div>
+          <table class="data">
+            <tbody>
+              <tr><td>Wrong → right (fixed by TTA)</td><td class="num" id="n-fixed"></td></tr>
+              <tr><td>Right → wrong (broken by TTA)</td><td class="num" id="n-broken"></td></tr>
+              <tr><td>Right both ways</td><td class="num" id="n-right"></td></tr>
+              <tr><td>Wrong both ways</td><td class="num" id="n-wrong"></td></tr>
+              <tr><td>Accuracy on the training images</td><td class="num" id="n-train"></td></tr>
+              <tr><td>Inference cost</td><td class="num" id="n-cost"></td></tr>
+            </tbody>
+          </table>
+        </figure>
+      </div>
+    </section>
+  </main>
+  <script src="core.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* Additions on top of the guidebook style: landing hero and visualization embeds. */
+
+/* ---------- Landing hero ---------- */
+.hero {
+  text-align: center;
+  padding: 1.5rem 0 1rem;
+}
+
+.md-typeset .hero h1 {
+  margin-bottom: 0.4rem;
+  font-size: 2.4rem;
+}
+
+.md-typeset .hero .hero-lead {
+  max-width: 34rem;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+/* ---------- Cards ---------- */
+.md-typeset .grid.cards > ul > li {
+  border: 0.05rem solid var(--md-code-hl-color);
+  border-radius: 8px;
+  background-color: var(--md-code-bg-color);
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-code-hl-color);
+  box-shadow: none;
+}
+
+/* ---------- Visualization embed ---------- */
+.viz-embed {
+  margin: 1.2rem 0 0.6rem;
+  border: 0.05rem solid var(--md-code-hl-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--md-code-bg-color);
+}
+
+/* The frame resizes itself to its content (see assets/viz/viz.js);
+   the height below is only the value used before it loads. */
+.viz-embed iframe {
+  display: block;
+  width: 100%;
+  height: 620px;
+  border: 0;
+}
+
+.md-typeset .viz-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 1.4rem;
+}
+
+.md-typeset .viz-actions .md-button {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.7rem;
+}
+
+/* Lecture label above a visualization title */
+.md-typeset .viz-lecture {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Visualization pages hide the table of contents, so let the content breathe. */
+@media screen and (min-width: 76.25em) {
+  .md-content--wide .md-content__inner {
+    margin-right: 1.2rem;
+  }
+}

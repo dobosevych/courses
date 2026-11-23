@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Histogram · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    .mode-row[hidden] { display: none; }
+    #cT { cursor: default; }
+    #cIn, #cOut { cursor: crosshair; }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Histogram</h1>
+        <p>Lecture 1.2 · Point operations, contrast stretching and histogram equalization</p>
+      </div>
+    </header>
+
+    <div class="controls" id="top">
+      <span class="contents" id="picker"></span>
+      <label class="ctl">
+        <span>Exposure of the input</span>
+        <select id="start">
+          <option value="low">Low contrast</option>
+          <option value="dark">Underexposed</option>
+          <option value="bright">Overexposed</option>
+          <option value="original">Original</option>
+        </select>
+      </label>
+      <div class="ctl">
+        <span>Operation</span>
+        <div class="seg" id="mode" role="group" aria-label="Operation">
+          <button type="button" class="btn" data-mode="manual">Manual</button>
+          <button type="button" class="btn" data-mode="stretch">Contrast stretching</button>
+          <button type="button" class="btn" data-mode="equalize">Equalization</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls mode-row" id="row-manual">
+      <label class="ctl wide">
+        <span>Brightness b <output id="o-brightness"></output></span>
+        <input type="range" id="brightness" min="-120" max="120" step="1" value="0">
+      </label>
+      <label class="ctl wide">
+        <span>Contrast c <output id="o-contrast"></output></span>
+        <input type="range" id="contrast" min="0.2" max="4" step="0.05" value="1">
+      </label>
+      <label class="ctl wide">
+        <span>Gamma γ <output id="o-gamma"></output></span>
+        <input type="range" id="gamma" min="0.2" max="3" step="0.05" value="1">
+      </label>
+      <button type="button" class="btn" id="reset">Reset</button>
+    </div>
+
+    <div class="controls mode-row" id="row-stretch" hidden>
+      <label class="ctl wide">
+        <span>Clip at each end <output id="o-clip"></output></span>
+        <input type="range" id="clip" min="0" max="10" step="0.5" value="1">
+      </label>
+    </div>
+
+    <div class="panes">
+      <figure class="pane">
+        <figcaption>Input <small id="s-in"></small></figcaption>
+        <canvas id="cIn" class="px"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Transfer function s = T(r)</figcaption>
+        <canvas id="cT"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Output <small id="s-out"></small></figcaption>
+        <canvas id="cOut" class="px"></canvas>
+      </figure>
+    </div>
+
+    <div class="panes two" style="margin-top: 0.9rem">
+      <figure class="pane">
+        <figcaption>Input histogram</figcaption>
+        <canvas id="hIn"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Output histogram</figcaption>
+        <canvas id="hOut"></canvas>
+      </figure>
+    </div>
+
+    <div class="legend">
+      <span><i class="swatch" style="background: var(--accent)"></i>histogram: number of pixels per intensity</span>
+      <span><i class="swatch" style="background: var(--primary)"></i>cumulative distribution (CDF)</span>
+      <span><i class="swatch" style="background: var(--peach)"></i>pixel under the cursor</span>
+    </div>
+    <p class="readout" id="formula"></p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>
