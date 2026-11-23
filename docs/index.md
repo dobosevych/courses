@@ -1,5 +1,5 @@
 ---
-title: Courses
+title: Home
 hide:
   - navigation
   - toc
