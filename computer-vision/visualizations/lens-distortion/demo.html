@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lens projections and distortion · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(230px, 1fr);
+      gap: 0.9rem;
+      align-items: start;
+    }
+
+    @media (max-width: 760px) {
+      .split { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    #view {
+      cursor: grab;
+      touch-action: pan-y;
+    }
+
+    #view.is-dragging { cursor: grabbing; }
+
+    .pane .readout { margin-top: 0; }
+
+    .part { margin: 2.2rem 0 0.7rem; }
+
+    .dash {
+      display: inline-block;
+      width: 1.3em;
+      margin-right: 0.35em;
+      border-top: 2px dashed var(--text);
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Lens projections and distortion</h1>
+        <p>Lecture 1.1 · What different lenses do to straight and parallel lines</p>
+      </div>
+    </header>
+
+    <h2>Projection models</h2>
+    <div class="controls">
+      <label class="ctl">
+        <span>Lens projection</span>
+        <select id="model">
+          <option value="rectilinear">Rectilinear · r = f·tan θ</option>
+          <option value="stereographic">Stereographic fisheye · r = 2f·tan(θ/2)</option>
+          <option value="equidistant">Equidistant fisheye · r = f·θ</option>
+          <option value="equisolid">Equisolid fisheye · r = 2f·sin(θ/2)</option>
+          <option value="orthographic">Orthographic fisheye · r = f·sin θ</option>
+        </select>
+      </label>
+      <label class="ctl">
+        <span>Scene</span>
+        <select id="scene">
+          <option value="wall">Grid wall</option>
+          <option value="corridor">Corridor</option>
+          <option value="rails">Railway</option>
+        </select>
+      </label>
+      <button type="button" class="btn" id="reset-view">Reset view</button>
+    </div>
+    <div class="controls">
+      <label class="ctl wide">
+        <span>Horizontal field of view <output id="o-fov"></output></span>
+        <input type="range" id="fov" min="30" max="240" step="1" value="150">
+      </label>
+      <label class="ctl wide">
+        <span>Look left / right <output id="o-yaw"></output></span>
+        <input type="range" id="yaw" min="-180" max="180" step="1" value="0">
+      </label>
+      <label class="ctl wide">
+        <span>Look down / up <output id="o-pitch"></output></span>
+        <input type="range" id="pitch" min="-90" max="90" step="1" value="0">
+      </label>
+    </div>
+
+    <div class="split">
+      <figure class="pane">
+        <figcaption>Image formed by the lens <small>drag to look around · click a line to highlight it</small></figcaption>
+        <canvas id="view"></canvas>
+      </figure>
+      <div class="stack">
+        <figure class="pane">
+          <figcaption>Mapping r(θ) <small>in units of f</small></figcaption>
+          <canvas id="map"></canvas>
+        </figure>
+        <div class="pane">
+          <div class="pane-title">Highlighted line</div>
+          <p class="readout" id="line-info"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i class="swatch" style="background: var(--blue)"></i>lines running into depth</span>
+      <span><i class="swatch" style="background: var(--green)"></i>horizontal lines across</span>
+      <span><i class="swatch" style="background: var(--mauve)"></i>vertical lines</span>
+      <span><i class="swatch" style="background: var(--peach)"></i>highlighted straight line</span>
+      <span><i class="dash"></i>circle through three of its points</span>
+    </div>
+    <p class="readout" id="model-info"></p>
+
+    <h2 class="part">Radial distortion (Brown–Conrady model)</h2>
+    <div class="controls">
+      <span class="contents" id="picker"></span>
+      <label class="ctl wide">
+        <span>k₁ <output id="o-k1"></output></span>
+        <input type="range" id="k1" min="-0.4" max="0.4" step="0.01" value="-0.22">
+      </label>
+      <label class="ctl wide">
+        <span>k₂ <output id="o-k2"></output></span>
+        <input type="range" id="k2" min="-0.3" max="0.3" step="0.01" value="0">
+      </label>
+      <div class="ctl">
+        <span>Preset</span>
+        <div class="seg" id="presets" role="group" aria-label="Distortion preset">
+          <button type="button" class="btn" data-k1="0" data-k2="0">None</button>
+          <button type="button" class="btn" data-k1="-0.22" data-k2="0">Barrel</button>
+          <button type="button" class="btn" data-k1="0.22" data-k2="0">Pincushion</button>
+          <button type="button" class="btn" data-k1="-0.35" data-k2="0.3">Mustache</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panes">
+      <figure class="pane">
+        <figcaption>Grid <small>dashed: ideal · solid: distorted</small></figcaption>
+        <canvas id="grid"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Image through the lens</figcaption>
+        <canvas id="warp"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Distorted vs. ideal radius</figcaption>
+        <canvas id="radial"></canvas>
+      </figure>
+    </div>
+    <p class="readout" id="radial-info" style="margin-top: 0.7rem"></p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>

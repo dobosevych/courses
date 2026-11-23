@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://dobosevych.github.io/courses/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/camera-lenses/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/canny/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/edge-detectors/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/histogram/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/lens-distortion/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+    <url>
+         <loc>https://dobosevych.github.io/courses/computer-vision/visualizations/test-time-augmentation/</loc>
+         <lastmod>2026-11-23</lastmod>
+    </url>
+</urlset>

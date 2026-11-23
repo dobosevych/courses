@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge detectors · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Six result panes: always three per row, two on phones. */
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .grid3 canvas { cursor: crosshair; }
+    .grid3 .pane > figcaption small { white-space: nowrap; }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+      align-items: start;
+    }
+
+    @media (max-width: 760px) {
+      .row2 { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 620px) {
+      .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    /* One line of the worked example: pixels × kernel = products, Σ = response. */
+    .calc { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.7rem; }
+    .calc-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem 0.55rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+    .calc-row .sym { color: var(--muted); }
+    .calc-row .sum { white-space: nowrap; }
+    .calc-row .sum b { color: var(--primary); font-weight: 600; }
+    .mx { display: inline-flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+    .mx .cap { color: var(--muted); font-family: var(--font); font-size: 0.64rem; }
+    .matrix > * { min-width: 2.3em; }
+    .matrix.heat { gap: 1px; }
+    .matrix.heat > * { min-width: 0; width: var(--cell); height: var(--cell); padding: 0; border-radius: 1px; }
+
+    .result { display: flex; align-items: center; gap: 0.9rem; margin-top: 0.8rem; }
+    .result canvas { flex: none; width: 76px; }
+    .result .readout { margin: 0; }
+
+    /* Comparison strip: borderless tiles; the selected one is tinted. */
+    .strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+      gap: 0.3rem;
+    }
+    .tile {
+      display: block;
+      min-width: 0;
+      margin: 0;
+      padding: 0.4rem;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .tile:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .tile.is-active { background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--text); }
+    .tile-cap {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .tile-cap small { font-weight: 500; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+    .tile.is-active .tile-cap { font-weight: 800; }
+    .tile canvas { display: block; width: 100%; height: auto; border-radius: 4px; }
+    h2 { margin-top: 1.1rem; }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Edge detectors</h1>
+        <p>Lecture 1.2 · Roberts, Prewitt, Sobel, Scharr, Laplacian and Laplacian of Gaussian</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <span class="contents" id="picker"></span>
+      <label class="ctl">
+        <span>Operator</span>
+        <select id="op"></select>
+      </label>
+      <label class="ctl wide" id="ctl-sigma" hidden>
+        <span>LoG scale σ <output id="o-sigma"></output></span>
+        <input type="range" id="sigma" min="0.6" max="2.4" step="0.1" value="1.4">
+      </label>
+    </div>
+
+    <div class="controls">
+      <label class="ctl wide">
+        <span>Noise <output id="o-noise"></output></span>
+        <input type="range" id="noise" min="0" max="40" step="1" value="0">
+      </label>
+      <label class="ctl wide">
+        <span>Blur before the operator, σ <output id="o-blur"></output></span>
+        <input type="range" id="blur" min="0" max="3" step="0.1" value="0">
+      </label>
+      <label class="ctl wide">
+        <span>Edge threshold <output id="o-thr"></output></span>
+        <input type="range" id="thr" min="1" max="80" step="1" value="20">
+      </label>
+    </div>
+
+    <div class="grid3">
+      <figure class="pane"><figcaption><span id="t0"></span><small id="s0"></small></figcaption><canvas id="c0" class="px"></canvas></figure>
+      <figure class="pane"><figcaption><span id="t1"></span><small id="s1"></small></figcaption><canvas id="c1" class="px"></canvas></figure>
+      <figure class="pane"><figcaption><span id="t2"></span><small id="s2"></small></figcaption><canvas id="c2" class="px"></canvas></figure>
+      <figure class="pane"><figcaption><span id="t3"></span><small id="s3"></small></figcaption><canvas id="c3" class="px"></canvas></figure>
+      <figure class="pane"><figcaption><span id="t4"></span><small id="s4"></small></figcaption><canvas id="c4" class="px"></canvas></figure>
+      <figure class="pane"><figcaption><span id="t5"></span><small id="s5"></small></figcaption><canvas id="c5" class="px"></canvas></figure>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="row2">
+      <div class="pane">
+        <div class="pane-title"><span>One pixel, worked out</span><small id="insp-pos"></small></div>
+        <p class="note" id="op-note" style="margin-top: 0"></p>
+        <div class="calc" id="calc"></div>
+        <div class="result">
+          <canvas id="arrow"></canvas>
+          <p class="readout" id="result"></p>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="pane-title"><span>Along the row under the cursor</span><small id="row-pos"></small></div>
+        <canvas id="profile"></canvas>
+        <p class="note">An edge is a peak of the first derivative and a zero-crossing of the second.
+          Gradient operators look for the peak, Laplacian operators for the crossing.</p>
+      </div>
+    </div>
+
+    <h2>All operators, same settings</h2>
+    <div class="strip" id="strip"></div>
+    <p class="note">Hover over any image, or tap it, to move the inspected pixel. Click an edge map to select that operator.</p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>
