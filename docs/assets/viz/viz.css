@@ -379,3 +379,22 @@ table.data th {
 }
 
 table.data td.num { font-family: var(--mono); text-align: right; }
+
+/* ---------- Touch screens ---------- */
+@media (pointer: coarse) {
+  /* 16px keeps iOS from zooming the page when a field gets focus. */
+  select,
+  input[type="number"],
+  input[type="text"] {
+    padding: 0.5rem 0.6rem;
+    font-size: 16px;
+  }
+
+  .btn { padding: 0.5rem 0.9rem; }
+  .btn.small { padding: 0.35rem 0.7rem; }
+
+  .chk { min-height: 2.4rem; }
+  .chk input { width: 1.15rem; height: 1.15rem; }
+
+  input[type="range"] { height: 1.9rem; }
+}

@@ -25,7 +25,7 @@ connected contours.
 
 - Walk through the stages with **Next** (or the ← → keys). The filmstrip keeps every stage in view,
   so you can see where a detail appears or is lost.
-- At **Non-max suppression**, hover over a thick ridge. The loupe marks the two neighbours along the
+- At **Non-max suppression**, hover over (or tap) a thick ridge. The loupe marks the two neighbours along the
   gradient direction; only the largest of the three survives, which is why the edge becomes one pixel wide.
 - At **Double threshold**, lower the *low* threshold: more orange (weak) pixels appear. Then go to
   **Hysteresis** — the ones attached to a white contour turn green and stay, the isolated ones turn red

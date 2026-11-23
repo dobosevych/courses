@@ -283,7 +283,7 @@
         "distribution, so the output CDF becomes (almost) a straight line";
     }
     if (state.probe) {
-      text += "<br>pixel under the cursor: r = " + state.probe.r + " → s = " + state.probe.s;
+      text += "<br>selected pixel: r = " + state.probe.r + " → s = " + state.probe.s;
     }
     $("formula").innerHTML = text;
   }
@@ -326,7 +326,8 @@
     }
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerdown", move);
-    canvas.addEventListener("pointerleave", function () {
+    canvas.addEventListener("pointerleave", function (ev) {
+      if (ev.pointerType !== "mouse") return;   // touch: keep the last tapped pixel
       state.probe = null;
       renderPlots();
       renderFormula();

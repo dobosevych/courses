@@ -23,7 +23,7 @@ and, as a result, how they react to noise. Pick an operator and follow one pixel
 
 ## What to try
 
-- Hover over the image. The panel below multiplies the pixels under the kernel by its weights and
+- Hover over the image, or tap it. The panel below multiplies the pixels under the kernel by its weights and
   sums them — that sum is the value you see in the response panes.
 - Choose the **Checkerboard** and put the cursor on a vertical border: Sobel gives
   \(G_x = 4 \cdot (214 - 42) = 688\) and \(G_y = 0\). Move to a horizontal border and the two swap.

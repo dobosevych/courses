@@ -28,7 +28,7 @@ need to fix the contrast.
 - In **Manual** mode move one slider at a time. Brightness shifts the histogram, contrast scales it
   around mid-gray, gamma bends it — watch pixels pile up at 0 or 255 when the curve is clipped.
 - Pick **Underexposed** and fix it with gamma only, then with equalization. Which keeps the sky smooth?
-- Hover over the image: the orange marker follows that pixel through the transfer function and both
+- Hover over the image, or tap it on a phone: the orange marker follows that pixel through the transfer function and both
   histograms.
 - Raise the **clip** percentage in contrast stretching and see how a few outliers stop limiting the range.
 
