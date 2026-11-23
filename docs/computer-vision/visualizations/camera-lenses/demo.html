@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera and lenses · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    .lens-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+      gap: 0.5rem;
+    }
+
+    /* Lens tiles: no border; the mounted lens is shown by a background tint and bolder label. */
+    .lens {
+      display: block;
+      min-width: 0;
+      padding: 0.3rem;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .lens:hover { background: var(--bg); }
+
+    .lens[aria-pressed="true"] {
+      background: color-mix(in srgb, var(--accent) 26%, transparent);
+    }
+
+    .lens[aria-pressed="true"] .lens-label { font-weight: 800; }
+
+    .lens[aria-pressed="true"] .lens-label small { color: var(--text); }
+
+    .lens canvas {
+      display: block;
+      width: 100%;
+      border-radius: 3px;
+    }
+
+    .lens-label {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0 0.4rem;
+      margin-top: 0.3rem;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .lens-label small {
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 400;
+    }
+
+    .chk.lock { padding-bottom: 0.3rem; }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Camera and lenses</h1>
+        <p>Lecture 1.1 · One scene through different focal lengths, sensors and camera distances</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <label class="ctl wide">
+        <span>Focal length f (zoom lens) <output id="o-f"></output></span>
+        <input type="range" id="f" min="0" max="1000" step="1" value="500">
+      </label>
+      <label class="ctl wide">
+        <span>Distance to the subject <output id="o-d"></output></span>
+        <input type="range" id="d" min="0" max="1000" step="1" value="500">
+      </label>
+      <label class="ctl">
+        <span>Sensor</span>
+        <select id="sensor">
+          <option value="ff">Full frame · 36 × 24 mm</option>
+          <option value="apsc">APS-C · 23.6 × 15.7 mm</option>
+          <option value="phone">Phone-size · 6.2 × 4.1 mm</option>
+        </select>
+      </label>
+      <label class="chk lock">
+        <input type="checkbox" id="lock">
+        Keep the subject the same size (dolly zoom)
+      </label>
+    </div>
+
+    <div class="panes two">
+      <figure class="pane">
+        <figcaption>Camera view <small id="cap-view"></small></figcaption>
+        <canvas id="view"></canvas>
+      </figure>
+      <figure class="pane">
+        <figcaption>Top-down plan <small>distances from the subject</small></figcaption>
+        <canvas id="plan"></canvas>
+      </figure>
+    </div>
+
+    <div class="pane" style="margin-top: 0.9rem">
+      <div class="pane-title">The same scene through prime lenses <small id="cap-strip"></small></div>
+      <div class="lens-strip" id="strip"></div>
+    </div>
+
+    <div class="legend">
+      <span><i class="swatch" style="background: var(--peach)"></i>subject, 1.75 m tall</span>
+      <span><i class="swatch" style="background: var(--subtext1)"></i>lamp posts, 10 m apart</span>
+      <span><i class="swatch" style="background: var(--green)"></i>trees</span>
+      <span><i class="swatch" style="background: var(--mauve)"></i>building, 70 m behind the subject</span>
+      <span><i class="swatch" style="background: var(--accent); opacity: 0.45"></i>field of view</span>
+    </div>
+    <p class="readout" id="info"></p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>

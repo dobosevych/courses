@@ -62,9 +62,14 @@ nav:
   - Home: index.md
   - Computer Vision:
       - Overview: computer-vision/index.md
+      - "1.1 Camera Model. Filtering. Morphology":
+          - Camera and lenses: computer-vision/visualizations/camera-lenses/index.md
+          - Lens projections and distortion: computer-vision/visualizations/lens-distortion/index.md
       - "1.2 Affine transformation. Histogram. Edge detection":
           - Test-time augmentation: computer-vision/visualizations/test-time-augmentation/index.md
           - Histogram: computer-vision/visualizations/histogram/index.md
+          - Edge detectors: computer-vision/visualizations/edge-detectors/index.md
+          - Canny step by step: computer-vision/visualizations/canny/index.md
 
 plugins:
   - search

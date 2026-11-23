@@ -253,6 +253,7 @@
     s.ctx.putImageData(s.image, 0, 0);
     var ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(s.canvas, 0, 0, w * scale, h * scale);
     return ctx;
   }

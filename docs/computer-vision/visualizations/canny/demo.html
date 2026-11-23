@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canny step by step · Computer Vision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../assets/viz/viz.css">
+  <script src="../../../assets/viz/viz.js"></script>
+  <style>
+    [hidden] { display: none !important; }
+
+    .stepper { align-items: center; }
+    .stepper .seg { flex: 1 1 auto; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .main { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    #big { cursor: crosshair; }
+    #stage-text { margin: 0 0 0.6rem; font-size: 0.86rem; }
+    #stage-text b { color: var(--primary); }
+    .side .pane-title + canvas { margin-top: 0; }
+    #loupe { max-width: 320px; }
+    .side .chk { margin-bottom: 0.6rem; }
+    .side .sub { margin-top: 0.9rem; }
+
+    /* Colour key attached to the image, on the image's own dark background so that
+       every class colour — white included — reads the same as in the picture. */
+    #legend {
+      margin-top: 0;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0 0 4px 4px;
+      background: rgb(14, 14, 22);
+      color: #d5d9e8;
+    }
+    #legend:empty { display: none; }
+    #big.has-legend { border-radius: 4px 4px 0 0; }
+
+    /* Filmstrip of all stages: borderless tiles; the current one is tinted. */
+    .film {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+      gap: 0.3rem;
+      margin-top: 0.9rem;
+    }
+    .tile {
+      display: block;
+      min-width: 0;
+      margin: 0;
+      padding: 0.4rem;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .tile:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .tile.is-active { background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--text); }
+    .tile-cap {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .tile.is-active .tile-cap { font-weight: 800; }
+    .tile canvas { display: block; width: 100%; height: auto; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <main class="viz">
+    <header class="viz-head">
+      <div>
+        <h1>Canny step by step</h1>
+        <p>Lecture 1.2 · Smoothing, gradient, non-maximum suppression, double threshold, hysteresis</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <span class="contents" id="picker"></span>
+      <label class="ctl wide">
+        <span>Noise <output id="o-noise"></output></span>
+        <input type="range" id="noise" min="0" max="40" step="1" value="0">
+      </label>
+      <label class="ctl wide">
+        <span>Smoothing σ <output id="o-sigma"></output></span>
+        <input type="range" id="sigma" min="0" max="4" step="0.1" value="1.4">
+      </label>
+    </div>
+
+    <div class="controls">
+      <label class="ctl wide">
+        <span>Low threshold <output id="o-low"></output></span>
+        <input type="range" id="low" min="1" max="60" step="1" value="8">
+      </label>
+      <label class="ctl wide">
+        <span>High threshold <output id="o-high"></output></span>
+        <input type="range" id="high" min="1" max="60" step="1" value="20">
+      </label>
+    </div>
+
+    <div class="controls stepper">
+      <button type="button" class="btn" id="prev">← Previous</button>
+      <div class="seg" id="steps" role="group" aria-label="Stage"></div>
+      <button type="button" class="btn" id="next">Next →</button>
+    </div>
+
+    <div class="main">
+      <figure class="pane">
+        <figcaption><span id="stage-title"></span><small id="stage-info"></small></figcaption>
+        <canvas id="big" class="px"></canvas>
+        <div class="legend" id="legend"></div>
+      </figure>
+
+      <div class="pane side">
+        <div class="pane-title"><span>What this stage does</span></div>
+        <p id="stage-text"></p>
+        <label class="chk" id="opt-dir" hidden>
+          <input type="checkbox" id="dir"> Colour by rounded gradient direction
+        </label>
+        <label class="chk" id="opt-overlay" hidden>
+          <input type="checkbox" id="overlay"> Draw the edges over the input
+        </label>
+        <div class="pane-title sub"><span>Around the cursor</span><small id="loupe-pos"></small></div>
+        <canvas id="loupe"></canvas>
+        <div class="legend" id="loupe-legend"></div>
+        <p class="readout" id="pixel"></p>
+      </div>
+    </div>
+
+    <div class="film" id="film"></div>
+    <p class="readout" id="counts"></p>
+    <p class="note">Hover over the large image to inspect a pixel. Click a thumbnail or use ← → to change the stage.</p>
+  </main>
+  <script src="demo.js"></script>
+</body>
+</html>
